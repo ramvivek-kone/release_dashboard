@@ -10,8 +10,16 @@ const ssSet = (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) { /* i
 const UI = { mode: ["present", "interact"].includes(qs.get("mode")) ? qs.get("mode") : (ssGet("rd.mode") || SETTINGS.defaultMode), expanded: new Set(), team: null, sel: null };
 
 /* ======================= render root ======================= */
+/* Home screen (upload prompt) is shown whenever no plan has been loaded; the dashboard appears once data exists. */
+function setNoData(on) {
+  document.documentElement.classList.toggle("nodata", on);
+  if (on) { stopStory(); MODEL = null; ALT = null; const t = SETTINGS.prefix || "R&D Execution"; $("title").textContent = `${t} – ${SETTINGS.subject || "Release Status"}`; document.title = $("title").textContent; }
+}
+function homeMsg(text) { const m = $("hMsg"); if (m) m.textContent = text || ""; }
+
 function render() {
-  if (!DATA) return;
+  if (!DATA) { setNoData(true); return; }
+  setNoData(false); homeMsg("");
   MODEL = buildModel(DATA, scenario);
   ALT = buildModel(DATA, scenario === "best" ? "pace" : "best");
   const M = MODEL, leaves = M.T.filter(t => t.leaf);
@@ -81,6 +89,7 @@ function hero(M) {
 
 /* ======================= mode handling ======================= */
 function applyMode() {
+  if (!MODEL) return;                                   // nothing loaded yet (home screen)
   document.body.className = UI.mode;
   document.querySelectorAll("#modeSeg button").forEach(b => b.classList.toggle("on", b.dataset.m === UI.mode));
   ssSet("rd.mode", UI.mode);

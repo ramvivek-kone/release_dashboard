@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Release Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="app.css?v=1.2">
+<link rel="stylesheet" href="app.css?v=1.4">
 </head>
 <body class="present">
 <header>
@@ -16,6 +16,32 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
   </button>
 </header>
+
+<section id="home">
+  <div class="homecard">
+    <div class="hk">Release dashboard</div>
+    <h2>Upload the latest Release plan</h2>
+    <p class="hlead">Export the plan for this release from <b>Microsoft Planner</b> and upload the <b>.xlsx</b> file. It is read in this browser only: nothing is uploaded or stored.</p>
+    <div class="dropbig" id="hDrop">
+      <div class="hico">📄</div>
+      <div class="hdt">Drag &amp; drop the Excel file here</div>
+      <div class="hor">or</div>
+      <div class="btnrow" style="justify-content:center">
+        <label class="btn primary big" id="hBrowse" for="hFile" role="button" tabindex="0">Browse for the .xlsx file…</label>
+        <button class="btn big" id="hLink" type="button" title="Edge or Chrome: the dashboard follows the file as you save it">🔗 Link file (live updates)</button>
+      </div>
+      <input type="file" id="hFile" class="vh" accept=".xlsx,.xlsm,.xlsb,.xls" tabindex="-1" aria-label="Choose the Planner export (.xlsx)">
+    </div>
+    <div class="hmsg" id="hMsg" role="alert"></div>
+    <div class="hhint" id="hHint"></div>
+    <ol class="hsteps">
+      <li><b>Export from Planner</b><span>Open the plan, choose <i>•••</i> then <i>Export plan to Excel</i>.</span></li>
+      <li><b>Upload the file</b><span>Drop it above. The dashboard builds itself in a second.</span></li>
+      <li><b>Refresh after each export</b><span>Upload the newer file, or use <i>Link file</i> to follow it live.</span></li>
+    </ol>
+    <div class="hlinks"><a href="sample/Release-template.xlsx" download>Download a blank template</a><span>·</span><a href="#" id="hDemo">Preview with demo data</a><span>·</span><a href="#" id="hSettings">⚙ Settings</a></div>
+  </div>
+</section>
 
 <section id="top">
   <div id="hero"></div>
@@ -43,13 +69,13 @@
 <div id="toast"></div>
 
 <script src="vendor/xlsx.full.min.js"></script>
-<script src="js/util.js"></script>
-<script src="js/defaults.js"></script>
-<script src="js/excel.js"></script>
-<script src="js/settings.js"></script>
-<script src="js/engine.js"></script>
-<script src="js/sample.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/app.js"></script>
+<script src="js/util.js?v=1.4"></script>
+<script src="js/defaults.js?v=1.4"></script>
+<script src="js/excel.js?v=1.4"></script>
+<script src="js/settings.js?v=1.4"></script>
+<script src="js/engine.js?v=1.4"></script>
+<script src="js/sample.js?v=1.4"></script>
+<script src="js/ui.js?v=1.4"></script>
+<script src="js/app.js?v=1.4"></script>
 </body>
 </html>

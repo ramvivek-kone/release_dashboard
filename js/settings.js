@@ -2,7 +2,7 @@
 /* Settings store (browser localStorage) + the Settings page + Excel file loading / linking. No server, no database. */
 
 const LS_KEY = "kone.rd.settings.v1";
-const App = { buffer: null, name: "", mtime: 0, size: 0, handle: null, sheet: "", report: null, sheetNames: [], source: "sample", loadedAt: null, linkError: "" };
+const App = { buffer: null, name: "", mtime: 0, size: 0, handle: null, sheet: "", report: null, sheetNames: [], source: "none", loadedAt: null, linkError: "" };   // source: none | file | sample
 
 function mergeSettings(base, s) {
   const out = JSON.parse(JSON.stringify(base));
@@ -59,7 +59,7 @@ async function loadFromFile(file, handle) {
 function applyBuffer(announce) {
   const res = parseWorkbookBuffer(App.buffer, App.name, App.mtime, { sheet: App.sheet, colMap: SETTINGS.colMap });
   App.report = res.report; App.sheetNames = res.sheetNames || [];
-  if (res.report.errors.length) { toast("Could not use this file: " + res.report.errors[0], true); refreshSourcePanel(); return false; }
+  if (res.report.errors.length) { toast("Could not use this file: " + res.report.errors[0], true); if (!DATA) homeMsg(`“${App.name}” could not be used: ${res.report.errors[0]}`); refreshSourcePanel(); return false; }
   App.sheet = res.report.sheet; App.source = "file"; App.loadedAt = new Date();
   DATA = res; UI.sel = null; render(); refreshSourcePanel();
   if (announce) toast(`Loaded ${res.report.tasks} tasks from ${App.name}` + (res.report.warnings.length ? ` (${res.report.warnings.length} warning${res.report.warnings.length === 1 ? "" : "s"})` : ""));
@@ -69,13 +69,22 @@ function useSample() {
   App.buffer = null; App.name = ""; App.handle = null; App.report = null; App.sheetNames = []; App.sheet = ""; App.source = "sample"; App.linkError = "";
   DATA = buildSampleData(); UI.sel = null; render(); refreshSourcePanel();
 }
+function clearData() {                       // back to the upload prompt
+  App.buffer = null; App.name = ""; App.handle = null; App.report = null; App.sheetNames = []; App.sheet = ""; App.source = "none"; App.linkError = "";
+  DATA = null; UI.sel = null; render(); refreshSourcePanel();
+}
 async function linkFile() {
-  if (!window.showOpenFilePicker) { toast("Linking needs Microsoft Edge or Google Chrome. Use Browse instead.", true); return; }
+  const fail = msg => { toast(msg, true); if (typeof homeMsg === "function" && !DATA) homeMsg(msg); };
+  if (!window.showOpenFilePicker) { fail("Link file needs Microsoft Edge or Google Chrome, opened directly (not inside a preview pane). Use “Browse” instead."); return; }
   try {
     const [h] = await window.showOpenFilePicker({ multiple: false, types: [{ description: "Excel workbook", accept: { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx", ".xlsm"], "application/vnd.ms-excel": [".xls"] } }] });
     const f = await h.getFile(); App.sheet = "";
     if (await loadFromFile(f, h)) toast(`Linked – the file is re-read every ${SETTINGS.refreshSeconds} s. Save in Excel and the dashboard updates.`);
-  } catch (e) { if (e.name !== "AbortError") toast("Could not link the file: " + e.message, true); }
+  } catch (e) {
+    if (e.name === "AbortError") return;                       // user closed the dialog: not an error
+    const blocked = e.name === "SecurityError" || e.name === "NotAllowedError";
+    fail(`Could not link the file (${e.name}). ` + (blocked ? "Your browser or company policy blocks live linking here – use “Browse” instead." : e.message));
+  }
 }
 function unlinkFile() { App.handle = null; App.linkError = ""; refreshSourcePanel(); updateStatusLine(); toast("Unlinked. The current data stays until you load another file."); }
 async function pollLinked() {
@@ -111,7 +120,7 @@ function openSettings() {
         <div class="srcline" id="sSrc"></div>
         <div class="dropzone" id="sDrop">Drag &amp; drop an Excel file here, or <button class="btn primary" id="sBrowse" type="button">Browse…</button>
           <input type="file" id="sFile" accept=".xlsx,.xlsm,.xlsb,.xls" hidden></div>
-        <div class="btnrow"><button class="btn" id="sLink" type="button">🔗 Link file (live re-read)</button><button class="btn danger" id="sUnlink" type="button">Unlink</button><button class="btn" id="sSample" type="button">Use sample data</button><span class="hint" id="sLinkHint"></span></div>
+        <div class="btnrow"><button class="btn" id="sLink" type="button">🔗 Link file (live re-read)</button><button class="btn danger" id="sUnlink" type="button">Unlink</button><button class="btn" id="sSample" type="button">Preview demo data</button><button class="btn" id="sClear" type="button">Start over (clear data)</button><span class="hint" id="sLinkHint"></span></div>
         <div class="frow" id="sSheetRow" style="display:none"><label>Sheet</label><select id="sSheet"></select></div>
         <div class="report" id="sReport"></div>
         <details><summary>Column mapping (only needed if your export uses different column names)</summary><div id="sMap" style="margin-top:.5rem"></div></details>
@@ -175,6 +184,7 @@ function openSettings() {
   ["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove("over"); }));
   dz.addEventListener("drop", async e => { const f = e.dataTransfer.files[0]; if (f) { App.sheet = ""; await loadFromFile(f, null); } });
   $("sLink").onclick = linkFile; $("sUnlink").onclick = unlinkFile; $("sSample").onclick = useSample;
+  $("sClear").onclick = () => { clearData(); closeSettings(); toast("Cleared. Upload the latest Planner export to continue."); };
   $("sSheet").onchange = e => { App.sheet = e.target.value; applyBuffer(false); };
   /* branding */
   $("fLogoBtn").onclick = () => $("fLogoFile").click();
@@ -217,7 +227,7 @@ function applyAfterSettings(resetModes) {
   applySettingsEffects();
   if (resetModes) { UI.mode = SETTINGS.defaultMode; scenario = SETTINGS.defaultScenario; }
   restartTimers();
-  if (DATA) render();
+  render();                                             // also refreshes the title when no plan is loaded
 }
 function exportSettings() {
   const blob = new Blob([JSON.stringify({ app: "kone-release-dashboard", settings: SETTINGS }, null, 2)], { type: "application/json" });
@@ -240,7 +250,8 @@ function refreshSourcePanel() {
   const linked = !!App.handle;
   src.innerHTML = App.source === "file"
     ? `📗 ${esc(App.name)} · ${App.report ? App.report.tasks : "?"} tasks · loaded ${App.loadedAt ? App.loadedAt.toLocaleTimeString("en-GB") : ""}${linked ? `<span class="badge">🔗 linked · checks every ${SETTINGS.refreshSeconds} s</span>` : ""}`
-    : `🧪 Sample data (demo). Load your Excel file to see your own release.`;
+    : App.source === "sample" ? `🧪 Demo data. Load the latest Planner export (.xlsx) to see your own release.`
+    : `No plan loaded yet. Upload the latest Planner export (.xlsx) of this release.`;
   $("sLink").disabled = !window.showOpenFilePicker; $("sUnlink").disabled = !linked;
   $("sLinkHint").textContent = window.showOpenFilePicker ? (linked ? "Save the file in Excel and the screen updates." : "") : "Linking needs Edge or Chrome.";
   const names = App.sheetNames || [];

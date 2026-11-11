@@ -25,6 +25,34 @@ header{background:var(--blue);color:#fff;display:flex;align-items:center;gap:1.6
 .gear:hover{background:rgba(255,255,255,.28)}
 .gear svg{width:1.35rem;height:1.35rem;fill:#fff}
 
+/* ---------- home: shown until a Planner export has been loaded ---------- */
+#home{display:none;flex:1;min-height:0;align-items:center;justify-content:center;padding:1.2rem 1.5rem;overflow:auto}
+html.nodata #home{display:flex}
+html.nodata #top, html.nodata #stage, html.nodata footer, html.nodata .seg, html.nodata #scenChip{display:none}
+.homecard{background:#fff;border-radius:1.2rem;width:min(60rem,94vw);padding:2.2rem 2.6rem 1.8rem;box-shadow:0 .5rem 2rem rgba(20,20,20,.08);display:flex;flex-direction:column;gap:1rem}
+.homecard .hk{font-size:.85rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+.homecard h2{font-size:2.3rem;font-weight:800;line-height:1.1}
+.hlead{font-size:1.05rem;line-height:1.5;color:#3b3632}
+.dropbig{border:.2rem dashed var(--sky);border-radius:1rem;background:#f8faff;padding:1.8rem 1rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem;transition:background .15s,border-color .15s}
+.dropbig.over{background:#eaf0ff;border-color:var(--blue)}
+.hico{font-size:2.6rem;line-height:1}
+.hdt{font-size:1.25rem;font-weight:800}
+.hor{font-size:.85rem;color:var(--muted);font-weight:600}
+.btn.big{font-size:1rem;padding:.7rem 1.5rem}
+label.btn{display:inline-block;cursor:pointer;user-select:none}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);pointer-events:none}   /* visually hidden but still a real, focusable file input */
+.hhint{font-size:.85rem;font-weight:600;background:var(--amber-bg);color:#6b4a00;border-radius:.7rem;padding:.55rem .9rem}
+.hhint:empty{display:none}
+.hmsg{font-size:.92rem;font-weight:700;color:var(--red);min-height:0}
+.hmsg:empty{display:none}
+.hmsg{background:var(--red-bg);border-radius:.7rem;padding:.6rem .9rem}
+.hsteps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;counter-reset:s}
+.hsteps li{counter-increment:s;background:#f6f2ee;border-radius:.8rem;padding:.8rem .9rem .8rem 3rem;position:relative;display:flex;flex-direction:column;gap:.2rem;font-size:.9rem;line-height:1.35}
+.hsteps li::before{content:counter(s);position:absolute;left:.8rem;top:.8rem;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+.hsteps li b{font-weight:800}.hsteps li span{color:#4a443f}.hsteps i{font-style:normal;font-weight:700}
+.hlinks{display:flex;gap:.7rem;justify-content:center;font-size:.88rem;color:var(--muted)}
+.hlinks a{color:var(--blue);font-weight:700;text-decoration:none}.hlinks a:hover{text-decoration:underline}
+
 /* ---------- single top section: stats | milestone rail | go-live status ---------- */
 #top{display:flex;align-items:center;gap:1.3rem;margin:.9rem 1.5rem 0;background:#fff;border-radius:1rem;padding:.5rem 1.3rem;flex:0 0 auto}
 #hero{display:flex;gap:1.2rem;flex:0 0 auto;padding-right:1.3rem;border-right:2px solid var(--line)}
