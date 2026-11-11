@@ -1,0 +1,14 @@
+# Never commit real project data: only the blank template under sample/ is allowed
+*.xlsx
+*.xlsm
+*.xlsb
+*.xls
+!sample/Release-template.xlsx
+
+# test / editor leftovers
+_test*.xlsx
+_bad.xlsx
+*.png.tmp
+.playwright-mcp/
+Thumbs.db
+.DS_Store
