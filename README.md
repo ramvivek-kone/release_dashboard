@@ -4,9 +4,11 @@ A release-status dashboard that runs entirely in the browser: no server, no data
 Load an Excel project plan and it shows overdue tasks, impacted tasks, the Go-Live outlook and milestones,
 either as an auto-playing wall display (**Present**) or a click-through review view (**Interact**).
 
+**Live site:** https://ramvivek-kone.github.io/release_dashboard/
+
 ## Use it
 
-- **GitHub Pages:** open the published site, click the gear icon (top right) and choose your Excel file.
+- **GitHub Pages:** open the live site, click the gear icon (top right) and choose your Excel file.
 - **Locally:** download the folder and double-click `Open-Dashboard.cmd` (Edge or Chrome), or open `index.html`.
 
 Your Excel file is read inside your browser and is never uploaded anywhere. It is kept for the current session only.
